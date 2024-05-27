@@ -1,0 +1,72 @@
+1. Eksperimen dengan Operasi Morfologi
+
+Parameter: Ukuran Kernel
+Coba ganti ukuran kernel yang digunakan dalam operasi morfologi. Misalnya, gunakan kernel ukuran (5, 5), (7, 7), dan (9, 9).
+
+# Modify the kernel size in the absolute_difference.py
+kernel = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
+# ...
+kernel = cv.getStructuringElement(cv.MORPH_RECT, (9, 9))
+Pengaruh:
+
+Kernel Kecil (5x5): Dapat mempertahankan detail yang lebih kecil, tetapi noise juga mungkin lebih terlihat.
+Kernel Besar (9x9): Dapat mengurangi noise lebih baik dan menghasilkan objek yang lebih solid, tetapi detail yang kecil bisa hilang.
+Parameter: Jenis Operasi Morfologi
+Coba ganti operasi morfologi yang digunakan, seperti cv.MORPH_OPEN, cv.MORPH_CLOSE, cv.MORPH_GRADIENT.
+
+
+# Modify the morphology operation in the absolute_difference.py
+morphImage = cv.morphologyEx(bgs, cv.MORPH_OPEN, kernel)
+# ...
+morphImage = cv.morphologyEx(bgs, cv.MORPH_GRADIENT, kernel)
+
+Pengaruh:
+MORPH_OPEN: Menghapus noise kecil, tetapi bisa mengurangi ukuran objek.
+MORPH_CLOSE: Menutup lubang kecil dalam objek, membuat objek lebih solid.
+MORPH_GRADIENT: Menghasilkan tepi objek yang lebih jelas, berguna untuk deteksi tepi.
+
+
+2. Eksperimen dengan Kernel Filter
+Parameter: Kernel Gaussian
+Coba ganti kernel Gaussian yang digunakan dalam filter 2D.
+
+
+# Modify the gaussian kernel in the absolute_difference.py
+gaussian = np.array([
+    [1, 2, 1],
+    [2, 4, 2],
+    [1, 2, 1]
+]) / 16
+
+gaussian = np.array([
+    [1, 4, 7, 4, 1],
+    [4, 16, 26, 16, 4],
+    [7, 26, 41, 26, 7],
+    [4, 16, 26, 16, 4],
+    [1, 4, 7, 4, 1]
+]) / 273
+
+Pengaruh:
+Kernel Lebih Kecil: Membuat smoothing yang kurang intensif, sehingga noise masih bisa terlihat.
+Kernel Lebih Besar: Membuat smoothing yang lebih intensif, mengurangi noise lebih efektif tetapi bisa mengaburkan detail.
+
+3. Eksperimen dengan Algoritma Segmentasi
+Parameter: History, Threshold, Shadow Detection di MOG2
+Coba ubah parameter history, varThreshold, dan detectShadows di MOG2.
+
+# Modify the parameters in the mog2.py
+subsMog2 = cv.createBackgroundSubtractorMOG2(history=500, varThreshold=100, detectShadows=True)
+
+Pengaruh:
+History Lebih Pendek: Background model lebih cepat beradaptasi, tetapi bisa menangkap perubahan temporer sebagai bagian dari background.
+Threshold Lebih Tinggi: Lebih banyak perubahan akan dianggap sebagai foreground, meningkatkan sensitivitas tetapi juga meningkatkan false positives.
+Shadow Detection On/Off: Dengan shadow detection, bayangan akan terdeteksi sebagai foreground, bisa mengganggu deteksi objek yang diinginkan.
+Parameter: History, Dist2Threshold di KNN
+Coba ubah parameter history dan dist2Threshold di KNN.
+
+# Modify the parameters in the knn.py
+subsKNN = cv.createBackgroundSubtractorKNN(history=500, dist2Threshold=400.0)
+
+Pengaruh:
+History Lebih Pendek: Sama seperti MOG2, lebih cepat beradaptasi tetapi bisa keliru dalam menangkap perubahan temporer.
+Dist2Threshold Lebih Tinggi: Membuat algoritma lebih sensitif terhadap perubahan, meningkatkan false positives.
